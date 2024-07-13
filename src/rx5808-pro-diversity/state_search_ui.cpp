@@ -4,29 +4,35 @@
 #include "channels.h"
 #include "ui.h"
 #include "pstr_helper.h"
+#include "voltage.h"
 
 
 #define BORDER_GRAPH_L_X 59
 
-#define CHANNEL_TEXT_SIZE 5
+#define CHANNEL_TEXT_SIZE 3
 #define CHANNEL_TEXT_X 0
 #define CHANENL_TEXT_Y 0
 #define CHANNEL_TEXT_H (CHAR_HEIGHT * CHANNEL_TEXT_SIZE)
-
-#define FREQUENCY_TEXT_SIZE 2
-#define FREQUENCY_TEXT_X 6
-#define FREQUENCY_TEXT_Y (SCREEN_HEIGHT - (CHAR_HEIGHT * 2))
-#define FREQUENCY_TEXT_H (CHAR_HEIGHT * FREQUENCY_TEXT_SIZE)
 
 #define SCANBAR_BORDER_X 0
 #define SCANBAR_BORDER_Y (CHANNEL_TEXT_H + 4)
 #define SCANBAR_BORDER_W (BORDER_GRAPH_L_X - 4)
 #define SCANBAR_BORDER_H 7
 
+#define FREQUENCY_TEXT_SIZE 2
+#define FREQUENCY_TEXT_X 6
+#define FREQUENCY_TEXT_Y (SCANBAR_BORDER_Y + SCANBAR_BORDER_H + 3)
+#define FREQUENCY_TEXT_H (CHAR_HEIGHT * FREQUENCY_TEXT_SIZE)
+
 #define SCANBAR_X (SCANBAR_BORDER_X + 2)
 #define SCANBAR_Y (SCANBAR_BORDER_Y + 2)
 #define SCANBAR_W (SCANBAR_BORDER_W - 4)
 #define SCANBAR_H (SCANBAR_BORDER_H - 4)
+
+#define VOLTAGE_TEXT_SIZE 1
+#define VOLTAGE_TEXT_X 0
+#define VOLTAGE_TEXT_Y (FREQUENCY_TEXT_Y + FREQUENCY_TEXT_H + 4)
+#define VOLTAGE_TEXT_H (CHAR_HEIGHT * VOLTAGE_TEXT_SIZE)
 
 #define GRAPH_SEPERATOR_Y SCREEN_HEIGHT_MID
 #define GRAPH_SEPERATOR_W (SCREEN_WIDTH - BORDER_GRAPH_L_X)
@@ -62,6 +68,7 @@ void StateMachine::SearchStateHandler::onInitialDraw() {
     drawChannelText();
     drawFrequencyText();
     drawScanBar();
+    drawVoltageText();
     drawRssiGraph();
 
     Ui::needDisplay();
@@ -89,11 +96,19 @@ void StateMachine::SearchStateHandler::onUpdateDraw() {
         SCANBAR_H
     );
 
+    Ui::clearRect(
+        VOLTAGE_TEXT_X,
+        VOLTAGE_TEXT_Y,
+        SCANBAR_W,
+        VOLTAGE_TEXT_H
+    );
+
     drawChannelText();
     drawFrequencyText();
     drawScanBar();
     drawRssiGraph();
     menu.draw();
+    drawVoltageText();
 
     Ui::needDisplay();
 }
@@ -130,6 +145,16 @@ void StateMachine::SearchStateHandler::drawFrequencyText() {
     display.setCursor(FREQUENCY_TEXT_X, FREQUENCY_TEXT_Y);
 
     display.print(Channels::getFrequency(Receiver::activeChannel));
+}
+
+void StateMachine::SearchStateHandler::drawVoltageText()
+{
+    display.setTextSize(VOLTAGE_TEXT_SIZE);
+    display.setTextColor(WHITE);
+    display.setCursor(VOLTAGE_TEXT_X, VOLTAGE_TEXT_Y);
+
+    display.print("B: ");
+    display.print(Voltage::getBatteryLevelString());
 }
 
 void StateMachine::SearchStateHandler::drawScanBar() {

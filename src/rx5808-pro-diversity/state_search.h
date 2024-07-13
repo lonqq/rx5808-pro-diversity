@@ -34,6 +34,7 @@ namespace StateMachine {
             void drawBorders();
             void drawChannelText();
             void drawFrequencyText();
+            void drawVoltageText();
             void drawScanBar();
             void drawRssiGraph();
             void drawMenu();

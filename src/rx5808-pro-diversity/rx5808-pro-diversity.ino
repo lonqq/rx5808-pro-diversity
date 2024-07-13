@@ -42,6 +42,8 @@ SOFTWARE.
 #include "receiver_spi.h"
 #include "buttons.h"
 #include "state.h"
+#include "voltage.h"
+#include "buzzer.h"
 
 #include "ui.h"
 
@@ -55,7 +57,7 @@ static void globalMenuButtonHandler(
 void setup()
 {
     setupPins();
-
+    Buzzer::setup();
     // Enable buzzer and LED for duration of setup process.
     digitalWrite(PIN_LED, HIGH);
     digitalWrite(PIN_BUZZER, LOW);
@@ -65,6 +67,7 @@ void setup()
     StateMachine::setup();
     Receiver::setup();
     Ui::setup();
+    Voltage::setup();
 
     Receiver::setActiveReceiver(Receiver::ReceiverId::A);
 
@@ -124,6 +127,11 @@ void loop() {
     StateMachine::update();
     Ui::update();
     EepromSettings.update();
+    
+#ifdef USE_VOLTAGE_MONITORING
+    Voltage::update();
+#endif
+    Buzzer::update();
 
     if (
         StateMachine::currentState != StateMachine::State::SCREENSAVER

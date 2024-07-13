@@ -90,7 +90,7 @@ SOFTWARE.
 
 // You can use any of the arduino analog pins to measure the voltage of the
 // battery. See additional configuration below.
-//#define USE_VOLTAGE_MONITORING
+#define USE_VOLTAGE_MONITORING
 
 // Choose if you wish to use 8 additional channels:
 //     5362 MHz
@@ -170,9 +170,15 @@ SOFTWARE.
     //    BAT- ----====----|----|
 
     // Voltage levels
-    #define WARNING_VOLTAGE 108 // 3.6V per cell for 3S
-    #define CRITICAL_VOLTAGE 100 // 3.3V per cell for 3S
-    #define VBAT_SCALE 119
+    // #define WARNING_VOLTAGE 108 // 3.6V per cell for 3S
+    // #define CRITICAL_VOLTAGE 100 // 3.3V per cell for 3S
+    // #define VBAT_SCALE 119
+    // #define VBAT_OFFSET 0
+
+    //1s li-ion values
+    #define WARNING_VOLTAGE 32 // 3.2V for 1S
+    #define CRITICAL_VOLTAGE 29 // 2.9V for 1S
+    #define VBAT_SCALE 205 // New scale factor for direct connection of 1S battery
     #define VBAT_OFFSET 0
 
     // Alarm sounds

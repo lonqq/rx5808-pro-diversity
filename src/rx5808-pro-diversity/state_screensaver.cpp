@@ -7,7 +7,8 @@
 #include "buttons.h"
 #include "state.h"
 #include "ui.h"
-
+#include "voltage.h"
+#include "buzzer.h"
 
 static const unsigned char PROGMEM logo[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -111,6 +112,17 @@ void StateMachine::ScreensaverStateHandler::onInitialDraw() {
             SCREEN_HEIGHT,
             WHITE
         );
+
+        Ui::display.setTextColor(WHITE);
+
+        Ui::display.setTextSize(1);
+        Ui::display.setCursor(2, 
+            SCREEN_HEIGHT - ((CHAR_HEIGHT) * 2));
+
+        Ui::display.print("Batt: ");
+        Ui::display.print(Voltage::getBatteryLevelString());
+
+        //Buzzer::enable(2);
     } else {
         Ui::display.setTextColor(WHITE);
 
@@ -123,9 +135,17 @@ void StateMachine::ScreensaverStateHandler::onInitialDraw() {
 
         Ui::display.setTextSize(2);
         Ui::display.setCursor(
-            SCREEN_WIDTH_MID - ((CHAR_WIDTH + 1) * 2) / 2 * 4 - 1,
+            3,
             SCREEN_HEIGHT - CHAR_HEIGHT * 2 - 2);
         Ui::display.print(Channels::getFrequency(Receiver::activeChannel));
+
+#ifdef USE_VOLTAGE_MONITORING
+        Ui::display.setTextSize(2);
+        Ui::display.setCursor(
+            SCREEN_WIDTH_MID,
+            SCREEN_HEIGHT - CHAR_HEIGHT * 2 - 2);
+        Ui::display.print(Voltage::getBatteryLevelString());
+#endif
     }
 
     Ui::needDisplay();
