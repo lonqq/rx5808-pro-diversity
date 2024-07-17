@@ -74,16 +74,17 @@ static const unsigned char PROGMEM logo[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-
-void StateMachine::ScreensaverStateHandler::onEnter() {
+void StateMachine::ScreensaverStateHandler::onEnter()
+{
     showLogo = true;
 }
 
-void StateMachine::ScreensaverStateHandler::onUpdate() {
-    if (this->displaySwapTimer.hasTicked()) {
+void StateMachine::ScreensaverStateHandler::onUpdate()
+{
+    if (this->displaySwapTimer.hasTicked())
+    {
         this->displaySwapTimer.reset();
         showLogo = !showLogo;
 
@@ -91,39 +92,44 @@ void StateMachine::ScreensaverStateHandler::onUpdate() {
     }
 }
 
-
 void StateMachine::ScreensaverStateHandler::onButtonChange(
     Button button,
-    Buttons::PressType pressType
-) {
+    Buttons::PressType pressType)
+{
     StateMachine::switchState(StateMachine::lastState);
 }
 
-
-void StateMachine::ScreensaverStateHandler::onInitialDraw() {
+void StateMachine::ScreensaverStateHandler::onInitialDraw()
+{
     Ui::clear();
 
-    if (showLogo) {
+    if (showLogo)
+    {
         Ui::display.drawBitmap(
             0,
             0,
             logo,
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
-            WHITE
-        );
+            WHITE);
 
         Ui::display.setTextColor(WHITE);
 
         Ui::display.setTextSize(1);
-        Ui::display.setCursor(2, 
-            SCREEN_HEIGHT - ((CHAR_HEIGHT) * 2));
+        Ui::display.setCursor(2,
+                              SCREEN_HEIGHT - ((CHAR_HEIGHT) * 2));
 
         Ui::display.print("Batt: ");
-        Ui::display.print(Voltage::getBatteryLevelString());
+        Ui::display.print(Voltage::batteryLevel);
+        if (Voltage::isCharging)
+        {
+            Ui::display.write(0x1E);
+        }
 
-        //Buzzer::enable(2);
-    } else {
+        // Buzzer::enable(2);
+    }
+    else
+    {
         Ui::display.setTextColor(WHITE);
 
         Ui::display.setTextSize(6);
@@ -142,15 +148,20 @@ void StateMachine::ScreensaverStateHandler::onInitialDraw() {
 #ifdef USE_VOLTAGE_MONITORING
         Ui::display.setTextSize(2);
         Ui::display.setCursor(
-            SCREEN_WIDTH_MID,
+            SCREEN_WIDTH_MID - CHAR_WIDTH,
             SCREEN_HEIGHT - CHAR_HEIGHT * 2 - 2);
-        Ui::display.print(Voltage::getBatteryLevelString());
+        Ui::display.print(Voltage::batteryLevel);
+        if (Voltage::isCharging)
+        {
+            Ui::display.write(0x1E);
+        }
 #endif
     }
 
     Ui::needDisplay();
 }
 
-void StateMachine::ScreensaverStateHandler::onUpdateDraw() {
+void StateMachine::ScreensaverStateHandler::onUpdateDraw()
+{
     this->onInitialDraw();
 }

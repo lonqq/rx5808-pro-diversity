@@ -133,6 +133,7 @@ SOFTWARE.
         #define PIN_VBAT A4
     #else
         #define PIN_VBAT A2
+        #define PIN_CHRG 8
     #endif
 #endif
 

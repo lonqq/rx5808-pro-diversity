@@ -32,7 +32,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 #include "settings.h"
 #include "settings_internal.h"
 #include "settings_eeprom.h"
@@ -47,12 +46,9 @@ SOFTWARE.
 
 #include "ui.h"
 
-
 static void globalMenuButtonHandler(
     Button button,
-    Buttons::PressType pressType
-);
-
+    Buttons::PressType pressType);
 
 void setup()
 {
@@ -71,12 +67,12 @@ void setup()
 
     Receiver::setActiveReceiver(Receiver::ReceiverId::A);
 
-    #ifdef USE_IR_EMITTER
-        Serial.begin(9600);
-    #endif
-    #ifdef USE_SERIAL_OUT
-        Serial.begin(250000);
-    #endif
+#ifdef USE_IR_EMITTER
+    Serial.begin(9600);
+#endif
+#ifdef USE_SERIAL_OUT
+    Serial.begin(250000);
+#endif
 
     // Setup complete.
     digitalWrite(PIN_LED, LOW);
@@ -88,7 +84,8 @@ void setup()
     StateMachine::switchState(StateMachine::State::SEARCH);
 }
 
-void setupPins() {
+void setupPins()
+{
     pinMode(PIN_LED, OUTPUT);
     pinMode(PIN_BUZZER, OUTPUT);
     pinMode(PIN_BUTTON_UP, INPUT_PULLUP);
@@ -96,63 +93,64 @@ void setupPins() {
     pinMode(PIN_BUTTON_DOWN, INPUT_PULLUP);
     pinMode(PIN_BUTTON_SAVE, INPUT_PULLUP);
 
-    pinMode(PIN_LED_A,OUTPUT);
-    #ifdef USE_DIVERSITY
-        pinMode(PIN_LED_B,OUTPUT);
-    #endif
+    pinMode(PIN_LED_A, OUTPUT);
+#ifdef USE_DIVERSITY
+    pinMode(PIN_LED_B, OUTPUT);
+#endif
 
     pinMode(PIN_RSSI_A, INPUT_PULLUP);
-    #ifdef USE_DIVERSITY
-        pinMode(PIN_RSSI_B, INPUT_PULLUP);
-    #endif
+#ifdef USE_DIVERSITY
+    pinMode(PIN_RSSI_B, INPUT_PULLUP);
+#endif
 
     pinMode(PIN_SPI_SLAVE_SELECT, OUTPUT);
     pinMode(PIN_SPI_DATA, OUTPUT);
-	pinMode(PIN_SPI_CLOCK, OUTPUT);
+    pinMode(PIN_SPI_CLOCK, OUTPUT);
 
     digitalWrite(PIN_SPI_SLAVE_SELECT, HIGH);
     digitalWrite(PIN_SPI_CLOCK, LOW);
     digitalWrite(PIN_SPI_DATA, LOW);
+
+#ifdef USE_VOLTAGE_MONITORING
+    pinMode(PIN_CHRG, INPUT_PULLUP);
+#endif
 }
 
-void setupSettings() {
+void setupSettings()
+{
     EepromSettings.load();
     Receiver::setChannel(EepromSettings.startChannel);
 }
 
-
-void loop() {
+void loop()
+{
     Receiver::update();
     Buttons::update();
     StateMachine::update();
     Ui::update();
     EepromSettings.update();
-    
+
 #ifdef USE_VOLTAGE_MONITORING
     Voltage::update();
 #endif
     Buzzer::update();
 
     if (
-        StateMachine::currentState != StateMachine::State::SCREENSAVER
-        && StateMachine::currentState != StateMachine::State::BANDSCAN
-        && (millis() - Buttons::lastChangeTime) >
-            (SCREENSAVER_TIMEOUT * 1000)
-    ) {
+        StateMachine::currentState != StateMachine::State::SCREENSAVER && StateMachine::currentState != StateMachine::State::BANDSCAN && (millis() - Buttons::lastChangeTime) > (SCREENSAVER_TIMEOUT * 1000))
+    {
         StateMachine::switchState(StateMachine::State::SCREENSAVER);
     }
 }
 
-
 static void globalMenuButtonHandler(
     Button button,
-    Buttons::PressType pressType
-) {
+    Buttons::PressType pressType)
+{
     if (
         StateMachine::currentState != StateMachine::State::MENU &&
         button == Button::MODE &&
-        pressType == Buttons::PressType::HOLDING
-    ) {
+        pressType == Buttons::PressType::HOLDING)
+    {
         StateMachine::switchState(StateMachine::State::MENU);
     }
 }

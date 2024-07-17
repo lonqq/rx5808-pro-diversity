@@ -11,10 +11,11 @@ namespace Voltage {
     extern uint8_t voltage;
     extern uint8_t voltageDec;
     extern uint16_t prevVoltageRaw;
+    extern uint8_t isCharging;
+    extern String batteryLevel;
     
     void setup();
     void update();
-    String getBatteryLevelString();
 }
 
 

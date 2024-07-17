@@ -154,7 +154,10 @@ void StateMachine::SearchStateHandler::drawVoltageText()
     display.setCursor(VOLTAGE_TEXT_X, VOLTAGE_TEXT_Y);
 
     display.print("B: ");
-    display.print(Voltage::getBatteryLevelString());
+    display.print(Voltage::batteryLevel);
+    if(Voltage::isCharging){
+        Ui::display.write(0x1E);
+    }
 }
 
 void StateMachine::SearchStateHandler::drawScanBar() {
