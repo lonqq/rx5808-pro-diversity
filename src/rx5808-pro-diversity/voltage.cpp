@@ -5,6 +5,7 @@
 #include "settings.h"
 #include "timer.h"
 #include "ui.h"
+#include "buzzer.h"
 
 namespace Voltage
 {
@@ -14,12 +15,14 @@ namespace Voltage
     uint8_t voltageDec;
     uint16_t prevVoltageRaw = 0;
     Timer voltageUpdateTimer = Timer(1000);
+    Timer alarmTimer = Timer(5000);
     uint8_t isCharging = 0;
     String batteryLevel;
 
     void setup()
     {
         voltageUpdateTimer.reset();
+        alarmTimer.reset();
     }
 
     String getBatteryLevelString()
@@ -45,16 +48,31 @@ namespace Voltage
         if (prevVoltageRaw == 0)
             prevVoltageRaw = voltageRaw;
 
-        voltageRaw = voltageRaw / 10 + 9 * prevVoltageRaw / 10;
+        // voltageRaw = voltageRaw / 5 + 4 * prevVoltageRaw / 5;
         prevVoltageRaw = voltageRaw;
 
         voltageRaw = voltageRaw * 10 / VBAT_SCALE;
 
         voltage = voltageRaw / 10;
         voltageDec = voltageRaw % 10;
-        isCharging = !digitalRead(PIN_CHRG);
+        isCharging = digitalRead(PIN_CHRG);
         voltageUpdateTimer.reset();
         batteryLevel = getBatteryLevelString();
+
+        if (alarmTimer.hasTicked())
+        {
+
+            if (voltageRaw < CRITICAL_VOLTAGE && voltageRaw > 10)
+            {
+                Buzzer::enable(CRITICAL_BEEPS);
+            }
+            else if (voltageRaw < WARNING_VOLTAGE && voltageRaw > 10)
+            {
+                Buzzer::enable(WARNING_BEEPS);
+            }
+
+            alarmTimer.reset();
+        }
     }
 
 } // namespace Voltage

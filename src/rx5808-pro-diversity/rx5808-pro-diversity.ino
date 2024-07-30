@@ -112,7 +112,7 @@ void setupPins()
     digitalWrite(PIN_SPI_DATA, LOW);
 
 #ifdef USE_VOLTAGE_MONITORING
-    pinMode(PIN_CHRG, INPUT_PULLUP);
+    pinMode(PIN_CHRG, INPUT);
 #endif
 }
 
